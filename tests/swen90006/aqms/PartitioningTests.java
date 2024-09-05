@@ -72,4 +72,31 @@ public class PartitioningTests {
     public void testDuplicateUser() throws DuplicateUserException, InvalidUsernameException, InvalidPasswordException, InvalidDeviceIDException {
         aqms.register("UserNameA", "ValidPass1!", "1234");  // UserNameA 已经在 setup() 中注册过
     }
+
+    // login方法测试
+    // 测试成功登录
+    @Test
+    public void testValidLogin() throws NoSuchUserException, IncorrectPasswordException, IncorrectDeviceIDException {
+        assertEquals("AUTHENTICATED", aqms.login("UserNameA", "Password1!", "1234"));
+    }
+
+    // 测试无效用户名
+    @Test(expected = NoSuchUserException.class)
+    public void testInvalidUsernameLogin() throws NoSuchUserException, IncorrectPasswordException, IncorrectDeviceIDException {
+        aqms.login("NonExistentUser", "Password1!", "1234");
+    }
+
+    // 测试无效密码
+    @Test(expected = IncorrectPasswordException.class)
+    public void testIncorrectPasswordLogin() throws NoSuchUserException, IncorrectPasswordException, IncorrectDeviceIDException {
+        aqms.login("UserNameA", "WrongPass1!", "1234");
+    }
+
+    // 测试无效设备ID
+    @Test(expected = IncorrectDeviceIDException.class)
+    public void testIncorrectDeviceIDLogin() throws NoSuchUserException, IncorrectPasswordException, IncorrectDeviceIDException {
+        aqms.login("UserNameA", "Password1!", "5678");
+    }
+
+
 }
