@@ -1,16 +1,15 @@
 package swen90006.aqms;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
  * This class is a template for your assignment, designed to help you get started with writing JUnit tests.
- * <p>
  * It sets up the testing environment by creating an instance of the AQMS (Air Quality Management System) class
  * and includes a few example tests to demonstrate how to write and structure your JUnit tests.
- * <p>
- * Please add your own tests starting from the section marked "ADD YOUR TESTS HERE".
  */
 public class PartitioningTests {
     // The AQMS instance variable aqms is shared across all test methods in this class
@@ -39,59 +38,38 @@ public class PartitioningTests {
         // No resources to clean up in this example, but this is where you would do so if needed
     }
 
-    /**
-     * This is a basic example test annotated with "@Test" to demonstrate how to use assertions in JUnit.
-     * The assertEquals method checks if the expected value matches the actual value.
-     */
-    @Test
-    public void aTest() {
-        final int expected = 2;
-        final int actual = 1 + 1;
-        // Use of assertEquals to verify that the expected value matches the actual value
-        assertEquals(expected, actual);
-    }
-
-    /**
-     * This example test shows how to check if a user exists after registration.
-     * The point is to let you know how to use assertTrue and assertFalse to verify conditions.
-     */
-    @Test
-    public void anotherTest()
-            throws DuplicateUserException, InvalidUsernameException, InvalidPasswordException, InvalidDeviceIDException {
-        aqms.register("UserNameB", "Password2!", "1234");
-
-        // Verify that the newly registered user exists and that a non-registered user does not exist
-        assertTrue(aqms.isUser("UserNameB"));
-        assertFalse(aqms.isUser("NonUser"));
-    }
-
-    /**
-     * This test checks if the InvalidDeviceIDException is correctly thrown when registering with an invalid device ID.
-     * The expected exception is specified in the @Test annotation.
-     */
-    @Test(expected = InvalidDeviceIDException.class)
-    public void anExceptionTest()
-            throws Throwable {
-        // Test registration with a valid username and password, but an invalid device ID
-        // to test whether the appropriate exception is thrown.
-        aqms.register("UserNameB", "Password2!", "12345");
-    }
-
-    /**
-     * This is an example of a test that is designed to fail.
-     * It shows how to include an error message to provide feedback when a test doesn't pass.
-     */
-    @Test
-    public void aFailedTest() {
-        // This test currently fails to demonstrate how JUnit reports errors
-        final int expected = 2;
-        final int actual = 1 + 2;
-        // Uncomment the following line to observe a test failure.
-        // assertEquals("Some failure message", expected, actual);
-    }
-
     // ADD YOUR TESTS HERE
     // This is the section where you will add your own tests.
-    // Follow the examples above to create your tests.
 
+    // register 方法测试
+    // 测试有效用户名、有效密码、有效设备ID的注册
+    @Test
+    public void testValidRegistration() throws DuplicateUserException, InvalidUsernameException, InvalidPasswordException, InvalidDeviceIDException {
+        aqms.register("ValidUser", "ValidPass1!", "1234");
+        assertTrue(aqms.isUser("ValidUser"));
+    }
+
+    // 测试无效用户名（少于4个字符）
+    @Test(expected = InvalidUsernameException.class)
+    public void testInvalidUsernameShort() throws DuplicateUserException, InvalidUsernameException, InvalidPasswordException, InvalidDeviceIDException {
+        aqms.register("Usr", "ValidPass1!", "1234");
+    }
+
+    // 测试无效密码（少于8个字符）
+    @Test(expected = InvalidPasswordException.class)
+    public void testInvalidPasswordShort() throws DuplicateUserException, InvalidUsernameException, InvalidPasswordException, InvalidDeviceIDException {
+        aqms.register("ValidUser", "Pass1!", "1234");
+    }
+
+    // 测试无效设备ID（长度不等于4）
+    @Test(expected = InvalidDeviceIDException.class)
+    public void testInvalidDeviceIDLength() throws DuplicateUserException, InvalidUsernameException, InvalidPasswordException, InvalidDeviceIDException {
+        aqms.register("ValidUser", "ValidPass1!", "12345");
+    }
+
+    // 测试重复用户名
+    @Test(expected = DuplicateUserException.class)
+    public void testDuplicateUser() throws DuplicateUserException, InvalidUsernameException, InvalidPasswordException, InvalidDeviceIDException {
+        aqms.register("UserNameA", "ValidPass1!", "1234");  // UserNameA 已经在 setup() 中注册过
+    }
 }
