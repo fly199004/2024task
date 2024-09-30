@@ -1,5 +1,10 @@
 <?php
-$env = parse_ini_file('../.env');
+$env = parse_ini_file(__DIR__ . '/../.env');
+
+
+if ($env === false) {
+    die("Failed to load .env file. Check the path and permissions.");
+}
 
 $host = $env["host"];
 $username = $env["username"];
